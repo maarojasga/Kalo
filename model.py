@@ -1,8 +1,8 @@
 import pandas as pd
 import re
 
-def cargar_datos():
-    datos = pd.read_excel("BASE.xlsx")
+def cargar_datos(archivo_excel):
+    datos = pd.read_excel(archivo_excel)
     return datos
 
 def extraer_nivel_ingles(columna):
@@ -21,8 +21,8 @@ def crear_columna_categoria_tiempo(datos):
     datos['Categoría Tiempo'] = datos['*Tiempo de experiencia*'].apply(lambda x: 'Presupuesto' if x in ['Sin experiencia', 'Menos de 1 año'] else 'Fecha límite' if x == 'Entre 1 a 3 años' else 'Tiempo de entrega')
     return datos
 
-def modelo_seleccion(opciones_prioridades, perfil_necesario, ingles_necesario, tecno, ingeniero):
-    datos = cargar_datos()
+def modelo_seleccion(datos, opciones_prioridades, perfil_necesario, ingles_necesario, tecno, ingeniero):
+
     datos = crear_columna_graduado(datos)
     datos = crear_columna_categoria_tiempo(datos)
     datos["Ingles"] = extraer_nivel_ingles(datos["*Nivel de Inglés*"])

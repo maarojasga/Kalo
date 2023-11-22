@@ -1,5 +1,5 @@
 import streamlit as st
-from model import modelo_seleccion
+from model import modelo_seleccion, cargar_datos
 import matplotlib.pyplot as plt
 
 # Función para generar la gráfica de barras
@@ -22,17 +22,17 @@ def generar_grafica(candidatos, porcentajes):
 
 def main():
     st.title("¡Contrata ahora!")
-    
+
     st.subheader("Estás a unas preguntas de conectar con el mejor talento tech para llevar tu negocio al siguiente nivel")
     
     st.text("Responde, por favor...")
-    
-    # Campo de entrada para el nombre
-    nombre = st.text_input("Nombre")
-    
-    # Campo de entrada para el correo
-    contacto = st.text_input("Correo")
-    
+
+
+    archivo_excel = st.file_uploader("Cargar archivo Excel", type=["xlsx"])
+    if not archivo_excel:
+        st.error("No se ha cargado ningún archivo.")
+        return
+    datos = cargar_datos(archivo_excel)
     # PREGUNTAS PARA SELECCIONAR AL CANDIDATO
     
     # Pregunta de organizar prioridades
@@ -93,7 +93,7 @@ def main():
         # Validación de campos obligatorios
         if nombre and contacto and opciones_prioridades and perfil_necesario and ingles_necesario and tecno and ingeniero:
             # Llamada a la función del modelo con los datos del formulario
-            resultado = modelo_seleccion(opciones_prioridades, perfil_necesario, ingles_necesario, tecno, ingeniero)
+            resultado = modelo_seleccion(datos, opciones_prioridades, perfil_necesario, ingles_necesario, tecno, ingeniero)
             resultado = resultado['Nombre']
             nombre_candidato_1 = resultado.values[0]  
             nombre_candidato_2 = resultado.values[1]  
@@ -110,7 +110,7 @@ def main():
             
             
     # Obtener los tres mejores candidatos con sus porcentajes de concordancia
-    candidatos_seleccionados = modelo_seleccion(opciones_prioridades, perfil_necesario, ingles_necesario, tecno, ingeniero)
+    candidatos_seleccionados = modelo_seleccion(datos, opciones_prioridades, perfil_necesario, ingles_necesario, tecno, ingeniero)
     porcentajes_concordancia = candidatos_seleccionados['Puntos'] / candidatos_seleccionados['Puntos'].sum()
 
     generar_grafica(candidatos_seleccionados['Nombre'], porcentajes_concordancia)
